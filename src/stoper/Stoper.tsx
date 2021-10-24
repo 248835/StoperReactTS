@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Button, IconButton, Colors, useTheme, Appbar} from 'react-native-paper';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { IconButton, useTheme } from 'react-native-paper';
+import { Props } from '../../App';
 
-const Stoper = () => {
+interface TimeMeasurment {
+  number: number,
+  measuredTime: string,
+  elapsedTime: string
+}
+
+const Stoper = ({ route }: Props<'Stoper'>) => {
   const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
+  const [timeMeasurments, setTimeMeasurments] = useState<TimeMeasurment[]>([{
+    number: 1,
+    measuredTime: '1:1:1',
+    elapsedTime: '1:1:1'
+  },
+  {
+    number: 2,
+    measuredTime: '2:2:2',
+    elapsedTime: '2:2:2'
+  }])
+
   const { colors } = useTheme();
 
   function toggle() {
@@ -32,27 +50,38 @@ const Stoper = () => {
   }, [isActive, seconds]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: route.params?.backgroundColor}]}>
 
-      <View style={styles.timerView}>
-        <Text style={styles.timerText}>{new Date(seconds * 1000).toISOString().substr(14, 5)}</Text>
+      <View>
+        <Text style={[styles.timerText,
+          { color: route.params?.textColor }]}>
+          {new Date(seconds * 1000).toISOString().substr(14, 5)}
+          </Text>
       </View>
+
+      <ScrollView>
+        {timeMeasurments.map(value =>
+          <Text key={value.number} style={{color: route.params?.textColor}}>numer: {value.number} czas1: {value.elapsedTime} czas2: {value.measuredTime}</Text>
+        )}
+      </ScrollView>
 
       <View style={styles.buttonsView}>
         <IconButton icon='refresh'
-          style={[styles.buttonLeft, {backgroundColor:colors.primary}]}
+          style={[styles.buttonLeft, { backgroundColor: colors.primary }]}
           color={'white'}
-          onPress={() => null}/>
+          onPress={reset}
+          disabled={isActive} />
         <IconButton
-          icon='play'
-          style={[styles.buttonMiddle, {backgroundColor:colors.primary}]}
+          icon={isActive ? 'pause' : 'play'}
+          style={[styles.buttonMiddle, { backgroundColor: colors.primary }]}
           color={'white'}
-          onPress={() => null}/>
+          onPress={toggle} />
         <IconButton
           icon='timer'
-          style={[styles.buttonRight, {backgroundColor:colors.primary}]}
+          style={[styles.buttonRight, { backgroundColor: colors.primary }]}
           color={'white'}
-          onPress={() => null}/>
+          onPress={() => null}
+          disabled={!isActive} />
       </View>
     </View>
   )
@@ -60,9 +89,6 @@ const Stoper = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
-  },
-  timerView: {
     flex: 1
   },
   timerText: {
@@ -80,7 +106,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderBottomRightRadius: 0,
     borderTopRightRadius: 0,
-    margin:0
+    margin: 0
   },
   buttonMiddle: {
     width: "15%",
@@ -88,7 +114,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderTopRightRadius: 0,
-    margin:0
+    margin: 0
   },
   buttonRight: {
     width: "15%",
@@ -96,7 +122,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderBottomRightRadius: 30,
     borderTopRightRadius: 30,
-    margin:0
+    margin: 0
   }
 })
 

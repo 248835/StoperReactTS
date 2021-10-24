@@ -7,17 +7,21 @@ import { IconButton, useTheme } from 'react-native-paper';
 import Settings from './src/settings/Settings';
 
 export type NativeStackParams = {
-  Stoper: undefined
+  Stoper: {
+    headerColor: string,
+    backgroundColor: string,
+    textColor: string
+  }
   Settings: undefined
 };
 
-type ScreenRouteProp<T extends keyof NativeStackParams> = RouteProp<NativeStackParams,T>;
+type ScreenRouteProp<T extends keyof NativeStackParams> = RouteProp<NativeStackParams, T>;
 
 type ScreenNavigationProp<
   T extends keyof NativeStackParams
-> = NativeStackNavigationProp<NativeStackParams, T>;
+  > = NativeStackNavigationProp<NativeStackParams, T>;
 
-type Props<T extends keyof NativeStackParams> = {
+export type Props<T extends keyof NativeStackParams> = {
   route: ScreenRouteProp<T>;
   navigation: ScreenNavigationProp<T>;
 };
@@ -30,8 +34,8 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle:{
-            backgroundColor:colors.primary
+          headerStyle: {
+            backgroundColor: colors.primary
           },
           headerTintColor: '#fff',
         }}>
@@ -39,17 +43,20 @@ const App = () => {
           name="Stoper"
           component={Stoper}
           options={({ navigation, route }) => ({
-          headerRight: () => (
-            <IconButton icon='play'
-              color={'white'}
-              onPress={() => navigation.navigate({name: "Settings"})}/>
-          ),
-        })}
+            headerStyle: {
+              backgroundColor: !!route.params ? route.params.headerColor : colors.primary
+            },
+            headerRight: () => (
+              <IconButton icon='play'
+                color={'white'}
+                onPress={() => navigation.navigate({ name: "Settings" })} />
+            ),
+          })}
         />
         <Stack.Screen
-        name="Settings"
-        component={Settings}
-        options={{ title: 'Stoper' }} />
+          name="Settings"
+          component={Settings}
+          options={{ title: 'Stoper' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
