@@ -10,9 +10,11 @@ interface TimeMeasurment {
 }
 
 const Stoper = ({ route }: Props<'Stoper'>) => {
-  const [seconds, setSeconds] = useState(0);
+  const [milliseconds, setMilliseconds] = useState(0);
+  const [startTime, setStartTime] = useState(0)
+  const [lastPause, setLastPause] = useState(0)
   const [isActive, setIsActive] = useState(false);
-  const [timeMeasurments, setTimeMeasurments] = useState<TimeMeasurment[]>([{
+  const [timeMeasurements, setTimeMeasurements] = useState<TimeMeasurment[]>([{
     number: 1,
     measuredTime: '1:1:1',
     elapsedTime: '1:1:1'
@@ -26,11 +28,18 @@ const Stoper = ({ route }: Props<'Stoper'>) => {
   const { colors } = useTheme();
 
   function toggle() {
-    setIsActive(!isActive);
+    if (isActive) {
+      setIsActive(false);
+      setLastPause((new Date().valueOf())+lastPause-startTime)
+    } else {
+      setIsActive(true);
+      setStartTime(new Date().valueOf())
+    }
   }
 
   function reset() {
-    setSeconds(0);
+    setMilliseconds(0);
+    setLastPause(0)
     setIsActive(false);
   }
 
@@ -38,30 +47,30 @@ const Stoper = ({ route }: Props<'Stoper'>) => {
     let interval: NodeJS.Timer | null = null;
     if (isActive) {
       interval = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
-      }, 1000);
-    } else if (!isActive && seconds !== 0 && interval) {
+        setMilliseconds((new Date().valueOf())+lastPause-startTime);
+      }, 17);
+    } else if (!isActive && milliseconds !== 0 && interval) {
       clearInterval(interval);
     }
     return () => {
       if (interval)
         clearInterval(interval);
     }
-  }, [isActive, seconds]);
+  }, [isActive, milliseconds]);
 
   return (
-    <View style={[styles.container, {backgroundColor: route.params?.backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor: route.params?.backgroundColor }]}>
 
       <View>
         <Text style={[styles.timerText,
-          { color: route.params?.textColor }]}>
-          {new Date(seconds * 1000).toISOString().substr(14, 5)}
-          </Text>
+        { color: route.params?.textColor }]}>
+          {new Date(milliseconds).toISOString().substr(14, 9)}
+        </Text>
       </View>
 
       <ScrollView>
-        {timeMeasurments.map(value =>
-          <Text key={value.number} style={{color: route.params?.textColor}}>numer: {value.number} czas1: {value.elapsedTime} czas2: {value.measuredTime}</Text>
+        {timeMeasurements.map(value =>
+          <Text key={value.number} style={{ color: route.params?.textColor }}>numer: {value.number} czas1: {value.elapsedTime} czas2: {value.measuredTime}</Text>
         )}
       </ScrollView>
 
@@ -92,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   timerText: {
-    fontSize: 100,
+    fontSize: 80,
     textAlign: 'center'
   },
   buttonsView: {
