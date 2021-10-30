@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import Stoper from './src/stoper/Stoper';
 import { RouteProp, NavigationContainer } from '@react-navigation/native';
@@ -30,6 +30,7 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
   const { colors } = useTheme();
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -42,14 +43,15 @@ const App = () => {
         <Stack.Screen
           name="Stoper"
           component={Stoper}
+		  initialParams={{bgColor: "#ffffff", textColor: "#000000", barColor: "#8A2BE2"}}
           options={({ navigation, route }) => ({
             headerStyle: {
-              backgroundColor: !!route.params ? route.params.headerColor : colors.primary
+              backgroundColor: !!route.params ? route.params.barColor : colors.primary
             },
             headerRight: () => (
               <IconButton icon='play'
                 color={'white'}
-                onPress={() => navigation.navigate({ name: "Settings" })} />
+                onPress={() => navigation.navigate( "Settings", {bgColor: route.params.bgColor, textColor: route.params.textColor, barColor: route.params.barColor})} />
             ),
           })}
         />
