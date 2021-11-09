@@ -13,6 +13,7 @@ const Settings = ({ navigation, route }: Props<'Stoper'>) => {
 	const [bgColor, setBgColor] = useState(route.params.backgroundColor);
 	const [textColor, setTextColor] = useState(route.params.textColor);
 	const [barColor, setBarColor] = useState(route.params.headerColor);
+	const [pickerTitle, setPickerTitle] = useState("picker title");
 
 	type OnColorChangedCallback = (newColor: string) => void;
 	const [onColorChanged, setTestFunc] = useState<OnColorChangedCallback>((newColor: string) => { });
@@ -24,6 +25,7 @@ const Settings = ({ navigation, route }: Props<'Stoper'>) => {
 	};
 
 	function onPickerPress(props: PickColorViewProps) {
+		setPickerTitle(props.label);
 		setTestFunc(() => props.onColorChange);
 		setPickedColor(props.color);
 		setShowPicker(true);
@@ -49,7 +51,7 @@ const Settings = ({ navigation, route }: Props<'Stoper'>) => {
 		<View style={styles.container}>
 			<View>
 				<Dialog.Container visible={showPicker}>
-					<Dialog.Title>Kolor tła</Dialog.Title>
+					<Dialog.Title>{pickerTitle}</Dialog.Title>
 					<ColorPicker
 						ref={picker}
 						color={pickedColor}
